@@ -1,7 +1,7 @@
-import sys
+#import sys
 import requests
 import csv
-from urllib.parse import urljoin
+import re
 from bs4 import BeautifulSoup
 
 #uprint is for debugging only (in case of printing encoding error)
@@ -13,55 +13,74 @@ from bs4 import BeautifulSoup
 		f = lambda obj: str(obj).encode(enc, errors='backslashreplace').decode(enc)
 		print(*map(f, objects), sep=sep, end=end, file=file)"""
 
+current_date = 24
+positions = ['PG','SG','SF','PF','C', 'G','F','UTIL']
+pagenums = [0,1,2,3,4,5,6,11]
+
 baseurl = 'http://games.espn.com/fba/leaders?&slotCategoryId='
-indexurl = '&seasonTotals=true&seasonId=2017&startIndex='
-next_page = 'http://games.espn.com/fba/leaders?&slotCategoryId=0&seasonTotals=true&seasonId=2017&startIndex=0'
+dateurl = '&scoringPeriodId='
+endurl = '&seasonId=2017&startIndex='
+next_page = str(baseurl) + str(0) + str(dateurl) + str(current_date-12) + str(endurl) + str(0)
 
-list = []
-positions = ['PG','SG','SF','PF','C','G','F']
-j = 0
-nextindex = 0
+for i in range(current_date-12,current_date+1,1):
+	list = []
+	j = 0
+	nextindex = 0
+	while True:
+		r = requests.get(next_page)
+		soup = BeautifulSoup(r.content,'html.parser')
+		button = soup.find('div',class_='paginationNav')
+		table = soup.find('table',class_='playerTableTable tableBody')
+		tr_count = 0
+		semaphore = 0
 
+		for row in table.findAll('tr'):
+			#discard first two tr
+			tr_count += 1
 
-while True:
-	r = requests.get(next_page)
-	soup = BeautifulSoup(r.content,'html.parser')
-	button = soup.find('div',class_='paginationNav')
-	table = soup.find('table',class_='playerTableTable tableBody')
+			cells = [c.get_text() for c in row.findAll('td')]
+			del cells[1:4]
+			stringcells = str(cells).replace('\\xa0', ' ')
+			stringcells = stringcells.replace(' \'\',','')
+			if '--' in stringcells:
+				semaphore = 1
+				break
 
-	for row in table.findAll('tr'):
-		cells = [c.get_text() for c in row.findAll('td')]
-		if 'PLAYER' not in str(cells) and '--' not in str(cells) and len(str(cells)) != 4:
-			cells.append(positions[j])
-			if 'DTD' in str(cells):
-				cells.append('DTD')
-			if '*' in str(cells):
-				cells.append('Out')
-			list.append(cells)
-		elif 'PLAYER' in str(cells) and j == 0 and nextindex == 0:
-			list.append(cells)
+			if  tr_count > 2:
+				if 'PLAYER' not in stringcells and '--' not in stringcells and len(stringcells) != 4:
+					cells.append(positions[j])
+					#print(stringcells)
+					loc = stringcells.find(', ') + 2
+					teamname = stringcells[ loc : stringcells.find(' ',loc+2)]
+					if teamname == 'Orl':
+						teamname = 'NO'
+					cells.append(teamname)
+					if 'DTD' in stringcells:
+						cells.append('DTD')
+					elif '*' in stringcells:
+						cells.append('Out')
+					else:
+						cells.append('G')
+					del(cells[1])
+					list.append(cells)
+				#elif 'PLAYER' in stringcells and j == 0 and nextindex == 0:
+					#list.append(cells)
 
-	print(button.get_text())
-	if 'NEXT' in button.get_text():
-		nextindex += 50
-		ending = indexurl + str(nextindex)
-		next_page = str(baseurl) +str(j) + str(ending)
-		print(next_page)
-	else:
-		if j+1 == len(positions):
-			break #exit loop
+		if 'NEXT' in button.get_text() and semaphore == 0:
+			nextindex += 50
+			ending = endurl + str(nextindex)
+			next_page = str(baseurl) + str(pagenums[j]) + str(dateurl) + str(i) + str(ending)
+			print(next_page)
 		else:
-			j += 1
-			nextindex = 0
-			ending = indexurl + str(0)
-			next_page = str(baseurl) +str(j) + str(ending)
+			if j+1 >= len(positions):
+				break #exit loop
+			else:
+				j += 1
+				nextindex = 0
+				ending = endurl + str(0)
+				next_page = str(baseurl) + str(pagenums[j]) + str(dateurl) + str(i) + str(ending)
 
-
-with open('test1.csv', 'w') as csvf:
-	csvwriter = csv.writer(csvf, delimiter=',', lineterminator='\n')
-	for i in range(len(list)):
-		csvwriter.writerow(list[i])
-
-
-
-
+	with open('data%s.csv'  % str(i), 'w') as csvf:
+		csvwriter = csv.writer(csvf, delimiter=',', lineterminator='\n')
+		for i in range(len(list)):
+			csvwriter.writerow(list[i])
