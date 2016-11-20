@@ -37,7 +37,6 @@ for i in range(current_date-12,current_date+1,1):
 		for row in table.findAll('tr'):
 			#discard first two tr
 			tr_count += 1
-
 			cells = [c.get_text() for c in row.findAll('td')]
 			del cells[1:4]
 			stringcells = str(cells).replace('\\xa0', ' ')
@@ -49,7 +48,6 @@ for i in range(current_date-12,current_date+1,1):
 			if  tr_count > 2:
 				if 'PLAYER' not in stringcells and '--' not in stringcells and len(stringcells) != 4:
 					cells.append(positions[j])
-					#print(stringcells)
 					loc = stringcells.find(', ') + 2
 					teamname = stringcells[ loc : stringcells.find(' ',loc+2)]
 					if teamname == 'Orl':
@@ -73,12 +71,15 @@ for i in range(current_date-12,current_date+1,1):
 			print(next_page)
 		else:
 			if j+1 >= len(positions):
+				next_page = str(baseurl) + str(0) + str(dateurl) + str(i+1) + str(endurl) + str(0)
+				print(next_page)
 				break #exit loop
 			else:
 				j += 1
 				nextindex = 0
 				ending = endurl + str(0)
 				next_page = str(baseurl) + str(pagenums[j]) + str(dateurl) + str(i) + str(ending)
+				print(next_page)
 
 	with open('data%s.csv'  % str(i), 'w') as csvf:
 		csvwriter = csv.writer(csvf, delimiter=',', lineterminator='\n')
