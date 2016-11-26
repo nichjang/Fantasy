@@ -1,7 +1,6 @@
 #import sys
 import requests
 import csv
-import re
 from bs4 import BeautifulSoup
 
 #uprint is for debugging only (in case of printing encoding error)
@@ -12,6 +11,12 @@ from bs4 import BeautifulSoup
 	else:
 		f = lambda obj: str(obj).encode(enc, errors='backslashreplace').decode(enc)
 		print(*map(f, objects), sep=sep, end=end, file=file)"""
+
+def cleanstr(input):
+	input = input.replace('\\xa0',' ')
+	input = input.replace(' \'\',','')
+	input = input.replace('.','')
+	return input
 
 current_date = 24
 positions = ['PG','SG','SF','PF','C', 'G','F','UTIL']
@@ -39,8 +44,9 @@ for i in range(current_date-12,current_date+1,1):
 			tr_count += 1
 			cells = [c.get_text() for c in row.findAll('td')]
 			del cells[1:4]
-			stringcells = str(cells).replace('\\xa0', ' ')
-			stringcells = stringcells.replace(' \'\',', '')
+			playername = cleanstr(str(cells[0]))
+			cells[0] = playername
+			stringcells = cleanstr(str(cells))
 			if '--' in stringcells:
 				semaphore = 1
 				break
@@ -50,7 +56,7 @@ for i in range(current_date-12,current_date+1,1):
 					cells.append(positions[j])
 					loc = stringcells.find(', ') + 2
 					teamname = stringcells[ loc : stringcells.find(' ',loc+2)]
-					if teamname == 'Orl':
+					if teamname == 'Nor':
 						teamname = 'NO'
 					cells.append(teamname)
 					if 'DTD' in stringcells:
