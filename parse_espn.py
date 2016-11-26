@@ -28,9 +28,9 @@ for i in range(current_date-12,current_date+1,1):
 	nextindex = 0
 	while True:
 		r = requests.get(next_page)
-		soup = BeautifulSoup(r.content,'html.parser')
-		button = soup.find('div',class_='paginationNav')
-		table = soup.find('table',class_='playerTableTable tableBody')
+		soup = BeautifulSoup(r.content, 'html.parser')
+		button = soup.find('div',class_ = 'paginationNav')
+		table = soup.find('table',class_ = 'playerTableTable tableBody')
 		tr_count = 0
 		semaphore = 0
 
@@ -40,7 +40,7 @@ for i in range(current_date-12,current_date+1,1):
 			cells = [c.get_text() for c in row.findAll('td')]
 			del cells[1:4]
 			stringcells = str(cells).replace('\\xa0', ' ')
-			stringcells = stringcells.replace(' \'\',','')
+			stringcells = stringcells.replace(' \'\',', '')
 			if '--' in stringcells:
 				semaphore = 1
 				break
