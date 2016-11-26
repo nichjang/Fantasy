@@ -3,6 +3,7 @@ import math
 import csv
 import functools
 from operator import add
+from collections import Counter
 
 csv_file = 'xy.csv'
 
@@ -207,3 +208,12 @@ for i in range(25,-1,-1):
 	print(GetTeamSalary(best_teams[i]))
 	print(GetTeamPointTotal(best_teams[i]))
 	print("Actual point total",GetActualPointTotal(best_teams[i]))
+
+print("\n\n")
+player_list = list(best_teams[i].values() for i in range(25))
+player_list = [item[0] for sublistone in player_list for sublisttwo in sublistone for item in sublisttwo]
+counted_list = Counter(player_list)
+counted_list = [[item, counted_list[item]/float(len(counted_list))] for item in counted_list]
+counted_list = sorted(counted_list, key = lambda x:x[1],reverse = True)
+for item in counted_list:
+	print(item)
