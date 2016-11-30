@@ -1,6 +1,7 @@
 #import sys
 import requests
 import csv
+import clean_string
 from bs4 import BeautifulSoup
 
 #uprint is for debugging only (in case of printing encoding error)
@@ -12,30 +13,24 @@ from bs4 import BeautifulSoup
 		f = lambda obj: str(obj).encode(enc, errors='backslashreplace').decode(enc)
 		print(*map(f, objects), sep=sep, end=end, file=file)"""
 
-def cleanstr(input):
-	input = input.replace('\\xa0',' ')
-	input = input.replace(' \'\',','')
-	input = input.replace('.','')
-	return input
-
-current_date = 24
+current_date = 35
 positions = ['PG','SG','SF','PF','C', 'G','F','UTIL']
 pagenums = [0,1,2,3,4,5,6,11]
 
 baseurl = 'http://games.espn.com/fba/leaders?&slotCategoryId='
 dateurl = '&scoringPeriodId='
 endurl = '&seasonId=2017&startIndex='
-next_page = str(baseurl) + str(0) + str(dateurl) + str(current_date-12) + str(endurl) + str(0)
+next_page = str(baseurl) + str(0) + str(dateurl) + str(1) + str(endurl) + str(0)
 
-for i in range(current_date-12,current_date+1,1):
+for i in range(1,current_date+1,1):
 	list = []
 	j = 0
 	nextindex = 0
 	while True:
 		r = requests.get(next_page)
 		soup = BeautifulSoup(r.content, 'html.parser')
-		button = soup.find('div',class_ = 'paginationNav')
-		table = soup.find('table',class_ = 'playerTableTable tableBody')
+		button = soup.find('div',class_='paginationNav')
+		table = soup.find('table',class_='playerTableTable tableBody')
 		tr_count = 0
 		semaphore = 0
 
@@ -44,9 +39,9 @@ for i in range(current_date-12,current_date+1,1):
 			tr_count += 1
 			cells = [c.get_text() for c in row.findAll('td')]
 			del cells[1:4]
-			playername = cleanstr(str(cells[0]))
+			playername = clean_string.cleanstr(str(cells[0]))
 			cells[0] = playername
-			stringcells = cleanstr(str(cells))
+			stringcells = clean_string.cleanstr(str(cells))
 			if '--' in stringcells:
 				semaphore = 1
 				break
@@ -87,7 +82,7 @@ for i in range(current_date-12,current_date+1,1):
 				next_page = str(baseurl) + str(pagenums[j]) + str(dateurl) + str(i) + str(ending)
 				print(next_page)
 
-	with open('data%s.csv'  % str(i), 'w') as csvf:
+	with open('C:\\Users\\Nicholas\\Documents\\GitHub\\Fantasy\\espn\\data%s.csv'  % str(i), 'w') as csvf:
 		csvwriter = csv.writer(csvf, delimiter=',', lineterminator='\n')
 		for i in range(len(list)):
 			csvwriter.writerow(list[i])
