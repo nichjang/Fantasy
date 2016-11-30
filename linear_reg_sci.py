@@ -19,7 +19,7 @@ with open(filename, 'r') as csvf:
 for row in y_csv:
 	row[0] = float(row[1]) - float(row[0])
 	del row[1]
-print(output_csv)
+
 #x_csv = list(map(lambda x: float(x), x_csv))
 #y_csv = list(map(lambda x: float(x), y_csv))
 
@@ -27,20 +27,21 @@ negative = 0
 for item in x_csv:
 	#if float(item[0]) - 95.0 < 0:
 	#	negative = 1
-	item[0] = float(item[0]) - 100
+	item[0] = abs(float(item[0])-101) * (float(item[0])-101)
 	#if negative == 1:
 	#	item[0] = -item[0]
 	#	negative = 0
-	item[1] = float(item[1]) - 100
+	item[1] = abs(float(item[1])-101) * (float(item[1])-101)
 	#item[0] = item[0] + item[1]
 	#del item[1]
 	item[2] = float(item[2])
+
 for item in y_csv:
 	item[0] = float(item[0])
 x = np.array(x_csv)
 y = np.array(y_csv)
 
-model = Pipeline([('poly', PolynomialFeatures(degree=6)), ('linear', LinearRegression(fit_intercept=False))])
+model = Pipeline([('poly', PolynomialFeatures(degree=5)), ('linear', LinearRegression(fit_intercept=False))])
 model = model.fit(x,y)
 print(model.named_steps['linear'].coef_)
 print(model.score(x,y))
