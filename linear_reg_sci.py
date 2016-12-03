@@ -5,43 +5,51 @@ from sklearn.linear_model import LinearRegression
 from sklearn.pipeline import Pipeline
 import csv
 
-filename = 'data.csv'
+filename_past = 'data.csv'
+filename_predict = 'data_predict.csv'
 output_csv = []
 x_csv = []
 y_csv = []
+predict = []
 
-with open(filename, 'r') as csvf:
+with open(filename_past, 'r') as csvf:
 	csvreader = csv.reader(csvf, delimiter=',',lineterminator='\n')
 	for row in csvreader:
-		output_csv.append(row[:2])
 		x_csv.append(row[3:])
 		y_csv.append(row[1:3])
 for row in y_csv:
 	row[0] = float(row[1]) - float(row[0])
 	del row[1]
 
-#x_csv = list(map(lambda x: float(x), x_csv))
-#y_csv = list(map(lambda x: float(x), y_csv))
+with open(filename_predict, 'r') as csvf:
+	csvreader = csv.reader(csvf, delimiter=',',lineterminator='\n')
+	for row in csvreader:
+		output_csv.append(row[:2])
+		predict.append(row[2:])
 
-negative = 0
 for item in x_csv:
-	#if float(item[0]) - 95.0 < 0:
-	#	negative = 1
-	item[0] = abs(float(item[0])-101) * (float(item[0])-101)
-	#if negative == 1:
-	#	item[0] = -item[0]
-	#	negative = 0
-	item[1] = abs(float(item[1])-101) * (float(item[1])-101)
-	#item[0] = item[0] + item[1]
-	#del item[1]
+	#item[0] = abs(float(item[0])-101) * (float(item[0])-101)
+	#item[1] = abs(float(item[1])-101) * (float(item[1])-101)
+	item[0] = float(item[0])
+	item[1] = float(item[1])
+	item[2] = float(item[2])
+
+for item in predict:
+	#item[0] = abs(float(item[0])-101) * (float(item[0])-101)
+	#item[1] = abs(float(item[1])-101) * (float(item[1])-101)
+	item[0] = float(item[0])
+	item[1] = float(item[1])
 	item[2] = float(item[2])
 
 for item in y_csv:
 	item[0] = float(item[0])
+
 x = np.array(x_csv)
 y = np.array(y_csv)
+p = np.array(predict)
 
-model = Pipeline([('poly', PolynomialFeatures(degree=5)), ('linear', LinearRegression(fit_intercept=False))])
+
+model = Pipeline([('poly', PolynomialFeatures(degree=1)), ('linear', LinearRegression(fit_intercept=False))])
 model = model.fit(x,y)
 print(model.named_steps['linear'].coef_)
 print(model.score(x,y))
@@ -55,12 +63,17 @@ plt.yticks(())
 
 plt.show()"""
 
+"""for item in p:
+	print(item)
+	print(float(model.predict(item.reshape(1,-1))))
+	print('\n')"""
+
 list = []
 
-for item in x:
+for item in p:
 	list.append([float(model.predict(item))])
 
-with open('datanew.csv', 'w') as csvf:
+with open('data_predictnew.csv', 'w') as csvf:
 	csvwriter = csv.writer(csvf, delimiter=',', lineterminator='\n')
 	for i in range(len(list)):
 		#print(output_csv[i][1])
