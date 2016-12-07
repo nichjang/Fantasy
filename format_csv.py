@@ -1,4 +1,4 @@
-
+from pathlib import Path
 import csv
 import clean_string
 
@@ -6,73 +6,81 @@ dict = {'Luc Richard Mbah a Moute':'Luc Mbah a Moute',
 		'Nene Hilario' : 'Nene'
 }
 
+dict_team = {'Was': 'Wsh'}
+
 def format_sal(start_date, end_date):
 	for j in range(start_date,end_date+1,1):
-		if j != 24:
+		for k in range(1,32,1):
 			list = []
-			print(j)
-			with open('C:\\Users\\Nicholas\\Documents\\GitHub\\Fantasy\\data\\11.%s\\salaries11.%s.csv' % (str(j),str(j)), 'r') as csvf:
-				csvreader = csv.reader(csvf, delimiter=',', lineterminator='\n')
-				for row in csvreader:
-					list.append(row)
-			del list[0]
-			copy_list = [_ for _ in list]
-			new_list = []
+			current_path = Path('C:\\Users\\Nicholas\\Documents\\GitHub\\Fantasy\\data\\%s.%s\\salaries%s.%s.csv' % (str(j),str(k),str(j),str(k)))
+			if current_path.is_file():
+				with open('C:\\Users\\Nicholas\\Documents\\GitHub\\Fantasy\\data\\%s.%s\\salaries%s.%s.csv' % (str(j),str(k),str(j),str(k)), 'r') as csvf:
+					csvreader = csv.reader(csvf, delimiter=',', lineterminator='\n')
+					for row in csvreader:
+						list.append(row)
+				del list[0]
+				copy_list = [_ for _ in list]
+				new_list = []
 
-			for i in range(len(copy_list)):
-				semaphore = 0
-				if copy_list[i][0].find('/') > 0:
+				for i in range(len(copy_list)):
+					semaphore = 0
+					if copy_list[i][0].find('/') > 0:
+						temp_list = []
+						copyrow = copy_list[i]
+						temp_list.append(copyrow[0][copyrow[0].find('/')+1:])
+						for row in copyrow[1:]:
+							temp_list.append(row)
+						new_list.append(temp_list)
+						copyrow.insert(0,copyrow[0][:copyrow[0].find('/')])
+						del copyrow[1]
+						if temp_list[0] == 'PG' or temp_list[0] == 'SG':
+							semaphore = 1
+							temp_list_2 = []
+							temp_list_2.append('G')
+							for row in temp_list[1:]:
+								temp_list_2.append(row)
+							new_list.append(temp_list_2)
+						if temp_list[0] == 'SF' or temp_list[0] == 'PF':
+							semaphore = 1
+							temp_list_2 = []
+							temp_list_2.append('F')
+							for row in temp_list[1:]:
+								temp_list_2.append(row)
+							new_list.append(temp_list_2)
+					if (copy_list[i][0] == 'PG' or copy_list[i][0] == 'SG') and semaphore == 0:
+						temp_list = []
+						temp_list.append('G')
+						for row in copy_list[i][1:]:
+							temp_list.append(row)
+						new_list.append(temp_list)
+					if (copy_list[i][0] == 'SF' or copy_list[i][0] == 'PF') and semaphore == 0:
+						temp_list = []
+						temp_list.append('F')
+						for row in copy_list[i][1:]:
+							temp_list.append(row)
+						new_list.append(temp_list)
 					temp_list = []
-					copyrow = copy_list[i]
-					temp_list.append(copyrow[0][copyrow[0].find('/')+1:])
-					for row in copyrow[1:]:
-						temp_list.append(row)
-					new_list.append(temp_list)
-					copyrow.insert(0,copyrow[0][:copyrow[0].find('/')])
-					del copyrow[1]
-					if temp_list[0] == 'PG' or temp_list[0] == 'SG':
-						semaphore = 1
-						temp_list_2 = []
-						temp_list_2.append('G')
-						for row in temp_list[1:]:
-							temp_list_2.append(row)
-						new_list.append(temp_list_2)
-					if temp_list[0] == 'SF' or temp_list[0] == 'PF':
-						semaphore = 1
-						temp_list_2 = []
-						temp_list_2.append('F')
-						for row in temp_list[1:]:
-							temp_list_2.append(row)
-						new_list.append(temp_list_2)
-				if (copy_list[i][0] == 'PG' or copy_list[i][0] == 'SG') and semaphore == 0:
-					temp_list = []
-					temp_list.append('G')
+					temp_list.append('UTIL')
 					for row in copy_list[i][1:]:
 						temp_list.append(row)
 					new_list.append(temp_list)
-				if (copy_list[i][0] == 'SF' or copy_list[i][0] == 'PF') and semaphore == 0:
-					temp_list = []
-					temp_list.append('F')
-					for row in copy_list[i][1:]:
-						temp_list.append(row)
-					new_list.append(temp_list)
-				temp_list = []
-				temp_list.append('UTIL')
-				for row in copy_list[i][1:]:
-					temp_list.append(row)
-				new_list.append(temp_list)
 
-			with open('C:\\Users\\Nicholas\\Documents\\GitHub\\Fantasy\\salaries11.%sformat.csv' % str(j), 'w') as csvf:
-				csvwriter = csv.writer(csvf, delimiter=',', lineterminator='\n')
-				for row in list:
-					row[1] = clean_string.cleanstr(row[1])
-					if row[1] == 'Luc Richard Mbah a Moute':
-						row[1] = 'Luc Mbah a Moute'
-					csvwriter.writerow(row)
-				for row in new_list:
-					row[1] = clean_string.cleanstr(row[1])
-					row[1] = abbrev(row[1])
-					csvwriter.writerow(row)
+				with open('C:\\Users\\Nicholas\\Documents\\GitHub\\Fantasy\\salaries\\salaries%s.%s.format.csv' % (str(j),str(k)), 'w') as csvf:
+					csvwriter = csv.writer(csvf, delimiter=',', lineterminator='\n')
+					for row in copy_list:
+						row[1] = clean_string.cleanstr(row[1])
+						if row[1] in dict:
+							row[1] = dict.get(row[1])
+						if row[5] in dict_team:
+							row[5] = dict_team.get(row[5])
+						csvwriter.writerow(row)
+					for row in new_list:
+						row[1] = clean_string.cleanstr(row[1])
+						if row[1] in dict:
+							row[1] = dict.get(row[1])
+						if row[5] in dict_team:
+							row[5] = dict_team.get(row[5])
+						csvwriter.writerow(row)
 
 def format_sal_single(date):
 	list = []
@@ -133,11 +141,15 @@ def format_sal_single(date):
 			row[1] = clean_string.cleanstr(row[1])
 			if row[1] in dict:
 				row[1] = dict.get(row[1])
+			if row[5] in dict_team:
+				row[5] = dict_team.get(row[5])
 			csvwriter.writerow(row)
 		for row in new_list:
 			row[1] = clean_string.cleanstr(row[1])
 			if row[1] in dict:
 				row[1] = dict.get(row[1])
+			if row[5] in dict_team:
+				row[5] = dict_team.get(row[5])
 			csvwriter.writerow(row)
 
 def format_results(start_date, end_date):
@@ -229,9 +241,9 @@ def format_season():
 			csvwriter.writerow(row)
 
 #format_season()
-format_sal_single(6)
+#format_sal_single(6)
 #format_results_single(6)
-#format_sal(18,29)
+format_sal(11,12)
 #format_data(1,13)
 #format_sal_single(3)
 #format_results_single(3)
