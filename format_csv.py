@@ -1,3 +1,4 @@
+
 import csv
 import clean_string
 
@@ -188,20 +189,49 @@ def format_results_single(start_date):
 def format_data(start_date, end_date):
 	list = []
 	for i in range(start_date,end_date+1,1):
-		if i != 24:
-			with open('C:\\Users\\Nicholas\\Documents\\GitHub\\Fantasy\\data_predict%s.csv' % str(i), 'r') as csvf:
-				csvreader = csv.reader(csvf, delimiter=',', lineterminator='\n')
-				for row in csvreader:
-					list.append(row)
-
+		with open('C:\\Users\\Nicholas\\Documents\\GitHub\\Fantasy\\data_predict%s.csv' % str(i), 'r') as csvf:
+			csvreader = csv.reader(csvf, delimiter=',', lineterminator='\n')
+			for row in csvreader:
+				if row[7]:
+					if float(row[7])>0:
+						list.append(row)
 	for row in list:
-		if not row[2]:
-			row[2] = float(0)
+		if not row[7]:
+			row[7] = float(0)
 	with open('C:\\Users\\Nicholas\\Documents\\GitHub\\Fantasy\\data.csv', 'w') as csvf:
 		csvwriter = csv.writer(csvf, delimiter=',', lineterminator='\n')
 		for row in list:
 			csvwriter.writerow(row)
 
-#format_sal_single(1)
+def format_season():
+	list = []
+	filename = 'C:\\Users\\Nicholas\\Documents\\GitHub\\Fantasy\\season.csv'
+	with open(filename, 'r') as csvf:
+		csvreader = csv.reader(csvf,delimiter=',',lineterminator='\n')
+		for row in csvreader:
+			temp_list = []
+			temp_list.append(row[0])
+			unpack = str(row[1])
+			unpack = unpack.replace('{','')
+			unpack = unpack.replace('}','')
+			cnt = 0
+			for i in range(unpack.count(',')+1):
+				if i != unpack.count(','):
+					temp_list.append(unpack[cnt:unpack.find(',',cnt)])
+					cnt = unpack.find(',',cnt)+1
+				else:
+					temp_list.append(unpack[cnt:])
+			list.append(temp_list)
+
+	with open(filename,'w') as csvf:
+		csvwriter = csv.writer(csvf,delimiter=',',lineterminator='\n')
+		for row in list:
+			csvwriter.writerow(row)
+
+#format_season()
+format_sal_single(6)
+#format_results_single(6)
 #format_sal(18,29)
-#format_data(18,29)
+#format_data(1,13)
+#format_sal_single(3)
+#format_results_single(3)
