@@ -154,27 +154,29 @@ def format_sal_single(date):
 
 def format_results(start_date, end_date):
 	for i in range(start_date,end_date+1,1):
-		if i != 24:
-			list = []
-			with open('C:\\Users\\Nicholas\\Documents\\GitHub\\Fantasy\\data\\11.%s\\results11.%s.csv' % (str(i),str(i)), 'r', errors="ignore") as csvf:
-				csvreader = csv.reader(csvf, delimiter=',', lineterminator='\n')
-				for row in csvreader:
-					if row[7]:
-						list.append(row)
-			
-			del list[0]
-			for item in list:
-				del item[:7]
-				del item[1]
+		for j in range(1,32,1):
+			current_path = Path('C:\\Users\\Nicholas\\Documents\\GitHub\\Fantasy\\data\\%s.%s\\results%s.%s.csv' % (str(i),str(j),str(i),str(j)))
+			if current_path.is_file():
+				list = []
+				with open('C:\\Users\\Nicholas\\Documents\\GitHub\\Fantasy\\data\\%s.%s\\results%s.%s.csv' % (str(i),str(j),str(i),str(j)), 'r', encoding='utf-8', errors="ignore") as csvf:
+					csvreader = csv.reader(csvf, delimiter=',', lineterminator='\n')
+					for row in csvreader:
+						if row[7]:
+							list.append(row)
+				
+				del list[0]
+				for item in list:
+					del item[:7]
+					del item[1]
 
-			with open('C:\\Users\\Nicholas\\Documents\\GitHub\\Fantasy\\results11.%sformat.csv' % str(i), 'w') as csvf:
-				csvwriter = csv.writer(csvf, delimiter=',', lineterminator='\n')
-				for row in list:
-					if row:
-						row[0] = clean_string.cleanstr(row[0])
-						if row[0] == 'Luc Richard Mbah a Moute':
-							row[0] = 'Luc Mbah a Moute'
-						csvwriter.writerow(row)
+				with open('C:\\Users\\Nicholas\\Documents\\GitHub\\Fantasy\\results\\results%s.%s.csv' % (str(i),str(j)), 'w') as csvf:
+					csvwriter = csv.writer(csvf, delimiter=',', lineterminator='\n')
+					for row in list:
+						if row:
+							row[0] = clean_string.cleanstr(row[0])
+							if row[0] in dict:
+								row[0] = dict.get(row[0])
+							csvwriter.writerow(row)
 
 def format_results_single(start_date):
 	list = []
@@ -189,13 +191,13 @@ def format_results_single(start_date):
 		del item[:7]
 		del item[1]
 
-	with open('C:\\Users\\Nicholas\\Documents\\GitHub\\Fantasy\\results12.%sformat.csv' % str(start_date), 'w') as csvf:
+	with open('C:\\Users\\Nicholas\\Documents\\GitHub\\Fantasy\\results\\results12.%s.csv' % str(start_date), 'w') as csvf:
 		csvwriter = csv.writer(csvf, delimiter=',', lineterminator='\n')
 		for row in list:
 			if row:
 				row[0] = clean_string.cleanstr(row[0])
-				if row[0] == 'Luc Richard Mbah a Moute':
-					row[0] = 'Luc Mbah a Moute'
+				if row[0] in dict:
+					row[0] = dict.get(row[0])
 				csvwriter.writerow(row)
 
 def format_data(start_date, end_date):
@@ -242,8 +244,7 @@ def format_season():
 
 #format_season()
 #format_sal_single(6)
-#format_results_single(6)
-format_sal(11,12)
+#format_sal(11,12)
 #format_data(1,13)
-#format_sal_single(3)
-#format_results_single(3)
+#format_results(11,12)
+format_results_single(7)
