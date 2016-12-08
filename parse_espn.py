@@ -84,6 +84,7 @@ def parse_single(current_date):
 				list[i][0] = clean_string.cleanstr(list[i][0][:list[i][0].find(',')])
 				csvwriter.writerow(list[i])
 
+#parse_single(43)
 def parse_beginning(current_date):
 	next_page = str(baseurl) + str(0) + str(dateurl) + str(1) + str(endurl) + str(0)
 	for i in range(1,current_date+1,1):
