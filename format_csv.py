@@ -135,7 +135,7 @@ def format_sal_single(date):
 			temp_list.append(row)
 		new_list.append(temp_list)
 
-	with open('C:\\Users\\Nicholas\\Documents\\GitHub\\Fantasy\\salaries12.%sformat.csv' % str(date), 'w') as csvf:
+	with open('C:\\Users\\Nicholas\\Documents\\GitHub\\Fantasy\\salaries\\salaries12.%s.format.csv' % str(date), 'w') as csvf:
 		csvwriter = csv.writer(csvf, delimiter=',', lineterminator='\n')
 		for row in copy_list:
 			row[1] = clean_string.cleanstr(row[1])
@@ -242,9 +242,45 @@ def format_season():
 		for row in list:
 			csvwriter.writerow(row)
 
+def get_results(num):
+	list = []
+	players = []
+	player_results = []
+
+	filename = 'C:\\Users\\Nicholas\\Documents\\GitHub\\Fantasy\\lineup.csv'
+	filename_results = 'C:\\Users\\Nicholas\\Documents\\GitHub\\Fantasy\\results\\results12.%s.csv' % str(num)
+	filename_new = 'C:\\Users\\Nicholas\\Documents\\GitHub\\Fantasy\\lineup_results.csv'
+	with open(filename, 'r') as csvf:
+		csvreader = csv.reader(csvf,delimiter=',',lineterminator='\n')
+		for row in csvreader:
+			list.append(row)
+
+	with open(filename_results, 'r') as csvf:
+		csvreader = csv.reader(csvf,delimiter=',',lineterminator='\n')
+		for row in csvreader:
+			players.append(row[0])
+			player_results.append(row[1])
+
+	for i in range(len(list) + 50):
+		if list[i][0] in players:
+			loc = players.index(list[i][0])
+			list[i][4] = player_results[loc]
+		if list[i][0] == 'estimated point is ':
+			total = 0
+			for j in range(3,10,1):
+				total += float(list[i-j][4])
+			phrase = "actual point total is ", total
+			list.insert(i+1,phrase)
+	with open(filename_new,'w') as csvf:
+		csvwriter = csv.writer(csvf,delimiter=',',lineterminator='\n')
+		for row in list:
+			csvwriter.writerow(row)
+
+get_results(10);
+
 #format_season()
-#format_sal_single(6)
+#format_sal_single(10)
 #format_sal(11,12)
 #format_data(1,13)
 #format_results(11,12)
-format_results_single(7)
+#format_results_single(10)
