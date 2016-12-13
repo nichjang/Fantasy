@@ -260,27 +260,96 @@ def get_results(num):
 		for row in csvreader:
 			players.append(row[0])
 			player_results.append(row[1])
-
-	for i in range(len(list) + 50):
-		if list[i][0] in players:
-			loc = players.index(list[i][0])
-			list[i][4] = player_results[loc]
-		if list[i][0] == 'estimated point is ':
+	i = len(list)
+	x = 0
+	while x < i:
+		if list[x][0] in players:
+			loc = players.index(list[x][0])
+			list[x].append(player_results[loc])
+		if list[x][0] == 'estimated point is ':
 			total = 0
-			for j in range(3,10,1):
-				total += float(list[i-j][4])
+			for j in range(2,10,1):
+				total += float(list[x-j][9])
 			phrase = "actual point total is ", total
-			list.insert(i+1,phrase)
+			list.insert(x+1,phrase)
+			i += 1
+		x += 1
 	with open(filename_new,'w') as csvf:
 		csvwriter = csv.writer(csvf,delimiter=',',lineterminator='\n')
 		for row in list:
 			csvwriter.writerow(row)
 
-get_results(10);
+def get_results_two(num):
+	list = []
+	players = []
+	player_results = []
+
+	filename = 'C:\\Users\\Nicholas\\Documents\\GitHub\\Fantasy\\lineup_two.csv'
+	filename_results = 'C:\\Users\\Nicholas\\Documents\\GitHub\\Fantasy\\results\\results12.%s.csv' % str(num)
+	filename_new = 'C:\\Users\\Nicholas\\Documents\\GitHub\\Fantasy\\lineup_two_results.csv'
+	with open(filename, 'r') as csvf:
+		csvreader = csv.reader(csvf,delimiter=',',lineterminator='\n')
+		for row in csvreader:
+			list.append(row)
+
+	with open(filename_results, 'r') as csvf:
+		csvreader = csv.reader(csvf,delimiter=',',lineterminator='\n')
+		for row in csvreader:
+			players.append(row[0])
+			player_results.append(row[1])
+	i = len(list)
+	x = 0
+	while x < i:
+		if list[x][0] in players:
+			loc = players.index(list[x][0])
+			list[x].append(player_results[loc])
+		if list[x][0] == 'estimated point is ':
+			total = 0
+			for j in range(2,10,1):
+				total += float(list[x-j][9])
+			phrase = "actual point total is ", total
+			list.insert(x+1,phrase)
+			i += 1
+		x += 1
+	with open(filename_new,'w') as csvf:
+		csvwriter = csv.writer(csvf,delimiter=',',lineterminator='\n')
+		for row in list:
+			csvwriter.writerow(row)
+
+def format_template(num):
+	list = []
+	filename = 'C:\\Users\\Nicholas\\Documents\\GitHub\\Fantasy\\template.csv'
+	filename_results = 'C:\\Users\\Nicholas\\Documents\\GitHub\\Fantasy\\template12.%s.csv' % str(num)
+
+	with open(filename, 'r') as csvf:
+		csvreader = csv.reader(csvf,delimiter=',',lineterminator='\n')
+		for row in csvreader:
+			list.append(row)
+	del list[0]
+	del list[1]
+
+	for i in range(len(list)):
+		del list[i][:11]
+		del list[i][2:]
+
+	del list[:7]
+	with open(filename_results, 'w') as csvf:
+		csvwriter = csv.writer(csvf,delimiter=',',lineterminator='\n')
+		for row in list:
+			csvwriter.writerow(row)
+
+def get_lineup(num):
+	filename = 'C:\\Users\\Nicholas\\Documents\\GitHub\\Fantasy\\template12.%s.csv' % str(num)
+	filename_results = 'C:\\Users\\Nicholas\\Documents\\GitHub\\Fantasy\\results\\results12.%s.csv' % str(num)
+	filename_new = 'C:\\Users\\Nicholas\\Documents\\GitHub\\Fantasy\\lineup_two_results.csv'
+
+get_lineup()
+#format_template(13)
+#get_results_two(12)
 
 #format_season()
-#format_sal_single(10)
+#format_sal_single(12)
 #format_sal(11,12)
 #format_data(1,13)
 #format_results(11,12)
-#format_results_single(10)
+#format_results_single(12)
