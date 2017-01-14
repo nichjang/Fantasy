@@ -6,89 +6,14 @@ from operator import add
 from collections import Counter
 
 csv_file = 'xy.csv'
-players_out = [
-#Bucks
-'Matthew Dellavedova', 'Jabari Parker','John Henson',
-#Wizards
-'Markieff Morris', 'Otto Porter',
-#Trailblazers
-'Mason Plumlee', 'Allen Crabbe','Evan Turner', 'Maurice Harkless',
-#Pacers
-
-#Hornets
-'Kemba Walker','Marvin Williams', 'Glenn Robinson',
-#Cavaliers
-'Kyrie Irving', 'Tristan Thompson',
-#Bulls
-'Nikola Mirotic',
-#Nuggets
-'Jameer Nelson','Emmanuel Mudiay', 'Will Barton', 'Danilo Gallinari', 'Wilson Chandler', 'Nikola Jokic',
-#Grizzlies
-
-#Nets
-'Jeremy Lin', 'Sean Kilpatrick','Isaiah Whitehead',
-#Mavericks
-'Dwight Powell','Seth Curry',
-#Thunder
-'Victor Oladipo', 'Andre Roberson',
-#Rockets
-'Sam Dekker', 'Ryan Anderson',
-#Pelicans
-'Tim Frazier', 'Jrue Holiday', 'Langston Galloway',
-#Heat
-'Josh McRoberts', 'Tyler Johnson',
-#76ers
-'Jon Leuer','Ish Smith',
-#Lakers
-'Larry Nance Jr','Jordan Clarkson',
-#Clippers
-'JJ Redick','DeAndre Jordan', 'Marreese Speights',
-#Celtics
-'Avery Bradley',
-#Magic
-'Evan Fournier', 'Elfrid Payton',
-#Hawks
-'Kent Bazemore',
-#Timberwolves
-'Ricky Rubio', 'Andrew Wiggins', 'Gorgui Dieng', 'Karl-Anthony Towns', 'Cole Aldrich',
-#Knicks
-'Courtney Lee', 'Kristaps Porzingis', 'Joakim Noah',
-#Suns
-'Devin Booker',
-#Warriors
-
-#Jazz
-'Rodney Hood','Shelvin Mack',
-#Kings
-]
-
-exception_list = ['Zaza Pachulia','Andre Iguodala','DJ Augustin','Thomas Robinson',]
-
-mod_list_first = {'Aaron Gordon': 0.99,
-'Stephen Curry': 1.01,
-'Mike Conley': 0.919999,
-'Matt Barnes': 0.849999,
-'Rudy Gobert': 1.04,
-'Zach Randolph': 0.97,
-'PJ Tucker': 0.95,
-'Serge Ibaka': 0.97,
-"D'Angelo Russell": 0.8,
-'Eric Bledsoe': 0.80999,
-'Ty Lawson': 1.15,
-'Draymond Green': 0.96,
-'LeBron James': 0.91999,
-'Tyson Chandler': 0.99,
-'Gordon Hayward': 1.05,
-'Julius Randle': 0.95,
-'Kevin Durant': 0.97,
-'TJ Warren': 0.95,
-'Kevin Love': 0.94,
+players_out = []
+exception_list = []
+mod_list_first = {	
 			}
 team_mod = {
 			}
 max_team = {
 			}
-
 mod_list = mod_list_first
 
 def import_players(file_name):
