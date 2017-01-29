@@ -4,6 +4,7 @@ import parse_dvp
 import parse_game
 import format_csv
 
+//Truncates all tables in database
 def truncate_everything():
 	cur.execute("TRUNCATE espnseason;")
 	cur.execute("TRUNCATE espnlastfive;")
@@ -14,6 +15,7 @@ def truncate_everything():
 	cur.execute("TRUNCATE dvp;")
 	cur.execute("TRUNCATE currentdk;")
 
+//Imports previous 13 dates into espnseason database	
 def import_dates(current_date):
 	for i in range(current_date,current_date-13,-1):
 		print("Executing from date ",i,"...")
@@ -21,7 +23,8 @@ def import_dates(current_date):
 		statement = "COPY espnseason_copy(Player,Minutes,FGMFGA,FGPercent,FTM,FTPercent,ThreePM,REB,AST,STL,Block,PTS,Position,Team,Status) FROM \'C:\\Users\\Nicholas\\Documents\\GitHub\\Fantasy\\espn\\data{}.csv\' DELIMITER \',\' CSV;".format(i)
 		cur.execute(statement)
 		cur.execute("SELECT transfer_data()")
-
+		
+//Imports all previous dates into espnseason database
 def import_dates_all(current_date):
 	for i in range(current_date,0,-1):
 		print("Executing from date ",i,"...")
@@ -30,37 +33,11 @@ def import_dates_all(current_date):
 		cur.execute(statement)
 		cur.execute("SELECT transfer_data()")
 
+//Executes function averagefive() which averages the 5 most recent games
 def last_five():
 	cur.execute("SELECT averagefive();")
 
-def execute_range():
-	espn_date = 25
-	game_date_start = 18
-	game_date_end = 29
-
-	for cur_date in range(game_date_start,game_date_end+1,1):
-		if cur_date != 24:
-			truncate_everything()
-			parse_game.parse(cur_date)
-			import_dates(cur_date+7)
-			last_five()
-			cur.execute("COPY gameinfo(team,teampoints,teamagainst) FROM \'C:\\Users\\Nicholas\\Documents\\GitHub\\Fantasy\\gameinfo.csv\' DELIMITER ',' CSV")
-			cur.execute("COPY currentdk(position,name,salary,gameinfo,avgpoints,teamabbrev) FROM \'C:\\Users\\Nicholas\\Documents\\GitHub\\Fantasy\\salaries\\salaries11.%s.format.csv\' DELIMITER ',' CSV" % str(cur_date))
-			cur.execute("COPY dvp(team,position,dvp_percent) FROM \'C:\\Users\\Nicholas\\Documents\\GitHub\\Fantasy\\dvp.csv\' DELIMITER ',' CSV")
-			cur.execute("COPY results(player,actualpoints) FROM \'C:\\Users\\Nicholas\\Documents\\GitHub\\Fantasy\\results\\results11.%s.csv\' DELIMITER ',' CSV" % str(cur_date))
-			cur.execute("SELECT update_salary()")
-			cur.execute("SELECT update_game()")
-			cur.execute("SELECT update_results()")
-			conn.commit()
-			cur.execute("COPY (SELECT distinct(player),threepm,reb,ast,stl,block,pts,actualpoints,teampoints,teamagainstpoints,dvp FROM espnlastfive WHERE salary > 2999) TO \'C:\\Users\\Nicholas\\Documents\\GitHub\\Fantasy\\data_predict%s.csv' With CSV DELIMITER ',';" % str(cur_date))
-	conn.close()
-
-def all_dates():
-	truncate_everything()
-	import_dates_all(38)
-	conn.commit()
-	conn.close()
-
+//Imports salary and game info for a certain day, then uses ESPN information to output a list of projected player points and salaries
 def execute_once():
 	cur_date = 35
 
