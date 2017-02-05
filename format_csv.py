@@ -427,15 +427,3 @@ def get_lineup(num):
 		csvwriter = csv.writer(csvf,delimiter=',',lineterminator='\n')
 		for row in list:
 			csvwriter.writerow(row)
-
-#get_lineup(8)
-#format_template(8)
-get_results_two(13)
-
-#format_season()
-#format_sal_single(13)
-#format_sal(11,12)
-#format_data(1,13)
-#format_results(11,12)
-format_results_single(13)
-get_results(13)
