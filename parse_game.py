@@ -37,6 +37,10 @@ def abbrev(name):
 		'POR': 'Por'
 	}[name]
 
+"""
+Input: empty list to store data, urls of website
+Output: None (writes team, Vegas points, and team against to the list provided)
+"""
 def get_data(list, baseurl, dateurl, endurl):
 	r = requests.get(str(baseurl + dateurl + endurl))
 	soup = BeautifulSoup(r.content, 'html.parser')
@@ -58,9 +62,13 @@ def get_data(list, baseurl, dateurl, endurl):
 		else:
 			list[i].append(list[i-1][0])
 
-def parse(date):
+"""
+Input: month and day to parse
+Output: CSV file with list of games and Vegas points
+"""
+def parse(month,date):
 	baseurl = 'https://rotogrinders.com/lineups/nba?date='
-	dateurl = '2016-12-' + str(date)
+	dateurl = '2017-' + str(month) + '-' + str(date)
 	endurl = '&site=draftkings'
 	game = []
 	filename = 'gameinfo.csv'
